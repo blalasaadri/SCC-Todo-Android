@@ -2,3 +2,4 @@ SCC-Todo-Android-SCC-Todo-Android.iml
 SCC-Todo-Android.iml
 .idea
 .gradle
+**/build

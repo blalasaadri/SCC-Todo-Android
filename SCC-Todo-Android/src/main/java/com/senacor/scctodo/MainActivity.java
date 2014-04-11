@@ -21,6 +21,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * TODO AC: JavaDoc
@@ -38,8 +39,6 @@ public class MainActivity extends ListActivity {
     private TodoListAdapter adapter;
 
     // Networking stuff
-    private Request getRequest;
-    private Request postRequest;
     private RequestQueue queue;
 
     // UI Elements
@@ -75,6 +74,7 @@ public class MainActivity extends ListActivity {
         // Do something when a list item is clicked
         Intent intent = new Intent(this, DetailsActivity.class);
         TodoItem clicked = (TodoItem) getListView().getItemAtPosition(position);
+        intent.putExtra("new", false);
         intent.putExtra("item", clicked);
         startActivity(intent);
     }
@@ -110,71 +110,9 @@ public class MainActivity extends ListActivity {
      * @return
      */
     private boolean onActionAdd() {
-        /*putRequest = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-                        TodoItem item = gson.fromJson(s, TodoItem.class);
-                        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                        intent.putExtra("item", item);
-                        startActivity(intent);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        // TODO
-                        boolean t = true;
-                    }
-                }) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("title", "");
-                        params.put("closed", "false");
-                        return params;
-                    }
-                };*/
-                /*putRequest = new GsonRequest<String>(Request.Method.PUT, url, String.class, null, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-                        TodoItem item = gson.fromJson(s, TodoItem.class);
-                        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                        intent.putExtra("item", item);
-                        startActivity(intent);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        // TODO
-                        boolean t = true;
-                    }
-                });*/
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("title", String.format("<%s>", R.string.enter_text_here));
-        params.put("completed", "false");
-
-        postRequest = new GsonRequest<String>(
-                Request.Method.POST, TodoUtils.getUrl(), String.class, params,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.d("Json Response", response);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMsg = error.getMessage();
-
-                Toast.makeText(MainActivity.this, String.format("%s (%s)", R.string.error_adding_to_server, errorMsg),
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-        );
-
-        queue.add(postRequest);
+        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        intent.putExtra("new", true);
+        startActivity(intent);
         return true;
     }
 
@@ -186,7 +124,7 @@ public class MainActivity extends ListActivity {
     private boolean onActionRefresh() {
         getListView().setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.getUrl(), TodoItems.class,
+        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.getUrl(), TodoItems.class,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
@@ -205,7 +143,7 @@ public class MainActivity extends ListActivity {
             public void onErrorResponse(VolleyError error) {
                 String errorMsg = error.getMessage();
 
-                Toast.makeText(MainActivity.this, String.format("%s (%s)", R.string.error_loading_from_server, errorMsg),
+                Toast.makeText(MainActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_loading_from_server, errorMsg)),
                         Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.GONE);
                 getListView().setVisibility(View.VISIBLE);
@@ -216,6 +154,11 @@ public class MainActivity extends ListActivity {
         return true;
     }
 
+    /**
+     * TODO AC: JavaDoc
+     *
+     * @return
+     */
     private boolean onActionSettings() {
         // TODO AC: Open settings
         return true;

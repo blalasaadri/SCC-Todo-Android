@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,6 +68,14 @@ public class TodoListAdapter implements ListAdapter {
         for (DataSetObserver observer : observers) {
             observer.onChanged();
         }
+    }
+
+    /**
+     * TODO AC: JavaDoc
+     * @return
+     */
+    public TodoItems getItems() {
+        return items;
     }
 
     @Override

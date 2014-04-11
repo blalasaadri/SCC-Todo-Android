@@ -7,10 +7,14 @@
     <string name="action_delete">Löschen</string>
     <string name="action_save">Speichern</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="state_open">Offen</string>
+    <string name="state_closed">Abgeschlossen</string>
     <string name="na">nicht verfügbar</string>
 
     <string name="enter_text_here">Hier Text eingeben</string>
 
     <string name="error_loading_from_server">Fehler beim Laden der Aufgaben vom Server</string>
-    <string name="error_adding_to_server">Fehler beim Hinzufügen einer Aufgabe auf dem Server</string>
+    <string name="error_adding_to_server">Fehler beim Hinzufügen der Aufgabe</string>
+    <string name="error_deleting_from_server">Fehler beim Löschen der Aufgabe</string>
+    <string name="error_marking_as_done">Fehler beim Markieren der Aufgabe als erledigt</string>
 </resources>

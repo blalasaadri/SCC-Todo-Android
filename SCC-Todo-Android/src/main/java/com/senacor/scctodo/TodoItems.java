@@ -1,5 +1,7 @@
 package com.senacor.scctodo;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,13 +14,24 @@ import java.util.TreeSet;
 public class TodoItems {
     List<TodoItem> content;
     private Page page;
+    private boolean sorted = false;
 
     public List<TodoItem> getContent() {
+        if(!sorted && content != null) {
+            Collections.sort(content, new Comparator<TodoItem>() {
+                @Override
+                public int compare(TodoItem lhs, TodoItem rhs) {
+                    return new Integer(lhs.getID()).compareTo(rhs.getID());
+                }
+            });
+            sorted = true;
+        }
         return content;
     }
 
     public void setContent(List<TodoItem> content) {
         this.content = content;
+        sorted = false;
     }
 
     public Page getPage() {
