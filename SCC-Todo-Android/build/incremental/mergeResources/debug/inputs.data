@@ -1,0 +1,22 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1395402043000 680 c76f4caaa7a8dfe9727fa93001b3aee3b22d6716 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values/styles.xml
+1395402043000 181 84de2797380184d8b39af6f829afb092fb956173 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values-sw600dp/dimens.xml
+1395402043000 211 4e1904afba59d31e5cd6133f6a4c360fa9a5913f /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values/dimens.xml
+1396387602000 627 ca703a789b25d5ecd7a8d71b559e9b0c258d0da8 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/menu/main_activity_actions.xml
+1395402043000 381 b129b276e01126de5b3b753572ac67cbfc19454c /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values-v14/styles.xml
+1396999886000 689 02ccedbf00124f1a901f51061a72e002b3d3dab7 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values/strings.xml
+1396385567000 1601 a289ea5cabd59e82451e2303bae82cdd93c089eb /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_menu_preferences.png
+1396302838000 3803 397c1116b07b68b6c617da42f412cccf6fa906e6 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_launcher.png
+1395402043000 324 aa1f5f1723de9aee2669dc44a26fbc0ce776d35f /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values-v11/styles.xml
+1396302905000 17408 eb3bb72b3de61644657275de10ab8fd61af62972 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/Thumbs.db
+1396993261000 644 0a08d0ebf28d16242e8d2951ae046b5deb1dfbe8 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/menu/details_activity_actions.xml
+1396385305000 1695 2c0240d177c7978fed9141ce3f7434a46c4c2e5a /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_menu_refresh.png
+1395402043000 254 25b6404e44acb50c82590049639d4fb5fefbac8e /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/values-sw720dp-land/dimens.xml
+1396385333000 1580 43b5d5b9f9a99ab73e6d23f10ac054db2141fad3 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_menu_add.png
+1396991740000 684 7775fbeaf3ce0db0d3d74ac489f86e93ebc58131 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/layout/todo_item.xml
+1396391793000 698 010aa81bc9c9f63efefbd021ce125ba56e8ecada /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/layout/activity_details.xml
+1396385367000 1247 e54f9af45b273965635c62fef002e7fe79ac8026 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_menu_delete.png
+1396385405000 1279 96c9b12d0ce6dd08c23959602e8515be8e36fb89 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/drawable/ic_menu_save.png
+1396297945000 425 e2a4fea9020ca0ecb60b64a90faa6320bdf1e8a8 /Users/acollinson/AndroidStudioProjects/SCC-Todo-Android/SCC-Todo-Android/src/main/res/layout/activity_main.xml

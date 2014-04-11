@@ -1,0 +1,14 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/details"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".DetailsActivity">
+    <EditText android:id="@+id/edit_area"
+              android:layout_height="match_parent"
+              android:layout_width="match_parent"
+              android:inputType="text|textMultiLine|textCapSentences|textAutoCorrect"
+              android:imeOptions="actionDone"
+              android:textIsSelectable="true"
+              android:gravity="top" />
+</LinearLayout>
