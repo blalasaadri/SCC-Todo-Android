@@ -10,10 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.http.impl.client.AbstractHttpClient;
 
 import java.util.HashMap;
@@ -26,11 +30,12 @@ import java.util.HashMap;
 public class DetailsActivity extends Activity {
 
     // Networking Stuff
-    private Request putRequest;
     private RequestQueue queue;
     private AbstractHttpClient client;
 
     private TodoItem item;
+
+    private EditText editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,10 @@ public class DetailsActivity extends Activity {
         Intent intent = getIntent();
         item = intent.getParcelableExtra("item");
 
-        EditText editor = (EditText) findViewById(R.id.edit_area);
+        editor = (EditText) findViewById(R.id.edit_area);
         editor.setText(item.getText());
+
+        queue = Volley.newRequestQueue(this, new HttpClientStack(TodoUtils.getClient()));
 
         // Show main icon as back button
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -72,10 +79,10 @@ public class DetailsActivity extends Activity {
     private boolean onActionSave() {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(item.getID()));
-        params.put("title", item.getText());
+        params.put("title", editor.getText().toString());
         params.put("completed", Boolean.toString(item.getClosed()));
 
-        putRequest = new GsonRequest<TodoItems>(
+        Request putRequest = new GsonRequest<TodoItems>(
                 Request.Method.PUT, TodoUtils.getUrl() + item.getID(), TodoItems.class, params,
                 new Response.Listener<TodoItems>() {
                     @Override
@@ -94,7 +101,8 @@ public class DetailsActivity extends Activity {
                 Toast.makeText(DetailsActivity.this, String.format("%s (%s)", R.string.error_adding_to_server, errorMsg),
                         Toast.LENGTH_LONG).show();
             }
-        });
+        }
+        );
         queue.add(putRequest);
         return true;
     }

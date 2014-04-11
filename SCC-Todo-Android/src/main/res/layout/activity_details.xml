@@ -7,8 +7,6 @@
     <EditText android:id="@+id/edit_area"
               android:layout_height="match_parent"
               android:layout_width="match_parent"
-              android:inputType="text|textMultiLine|textCapSentences|textAutoCorrect"
-              android:imeOptions="actionDone"
-              android:textIsSelectable="true"
+              android:inputType="text|textAutoComplete|textCapSentences|textMultiLine"
               android:gravity="top" />
 </LinearLayout>

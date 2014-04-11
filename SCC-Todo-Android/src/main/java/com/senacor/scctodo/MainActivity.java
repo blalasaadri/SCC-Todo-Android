@@ -8,6 +8,7 @@ import android.view.*;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -15,6 +16,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -39,7 +41,6 @@ public class MainActivity extends ListActivity {
     private Request getRequest;
     private Request postRequest;
     private RequestQueue queue;
-    private AbstractHttpClient client;
 
     // UI Elements
     private ProgressBar progressBar;
@@ -60,8 +61,7 @@ public class MainActivity extends ListActivity {
         root.addView(progressBar);
 
         // Set up the networking components
-        client = new DefaultHttpClient();
-        queue = Volley.newRequestQueue(this, new HttpClientStack(client));
+        queue = Volley.newRequestQueue(this, new HttpClientStack(TodoUtils.getClient()));
 
         // Create an empty adapter we will use to display the loaded data.
         // We pass null for the cursor, then update it in onLoadFinished()
@@ -171,7 +171,8 @@ public class MainActivity extends ListActivity {
                 Toast.makeText(MainActivity.this, String.format("%s (%s)", R.string.error_adding_to_server, errorMsg),
                         Toast.LENGTH_LONG).show();
             }
-        });
+        }
+        );
 
         queue.add(postRequest);
         return true;
@@ -209,7 +210,8 @@ public class MainActivity extends ListActivity {
                 progressBar.setVisibility(View.GONE);
                 getListView().setVisibility(View.VISIBLE);
             }
-        });
+        }
+        );
         queue.add(getRequest);
         return true;
     }

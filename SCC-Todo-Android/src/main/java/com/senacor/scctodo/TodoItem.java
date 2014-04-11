@@ -2,6 +2,7 @@ package com.senacor.scctodo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**

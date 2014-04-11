@@ -20,9 +20,11 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -73,6 +75,24 @@ public class GsonRequest<T> extends Request<T> {
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
         return params;
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return "application/json; charset=" + getParamsEncoding();
+    }
+
+    @Override
+    public byte[] getBody() throws AuthFailureError {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, String> entry : getParams().entrySet()) {
+            json.addProperty(entry.getKey(), entry.getValue());
+        }
+        try {
+            return mGson.toJson(json).getBytes(getParamsEncoding());
+        } catch(UnsupportedEncodingException e) {
+            return mGson.toJson(json).getBytes();
+        }
     }
 
     @Override
