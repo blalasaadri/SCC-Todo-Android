@@ -1,7 +1,9 @@
 package com.senacor.scctodo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -25,14 +27,23 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import java.util.HashMap;
 
 /**
- * TODO AC: JavaDoc
+ * This Activity shows details of either a selected TodoItem or a newly created one.
  *
  * @author Alasdair Collinson, Senacor Technologies AG
  */
 public class DetailsActivity extends Activity {
 
+    /**
+     * The request queue for networking tasks
+     */
     private RequestQueue queue;
+    /**
+     * The business item
+     */
     private TodoItem item;
+    /**
+     * Is this a newly created business item?
+     */
     private boolean newItem;
 
     @Override
@@ -40,16 +51,18 @@ public class DetailsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        // Is this a newly created item?
         newItem = getIntent().getBooleanExtra("new", false);
         if(newItem) {
+            // If so, create a new dummy item
             item = new TodoItem(getResources().getString(R.string.enter_text_here), 0, false);
-            getEditor().selectAll();
         } else {
-            // Get business item and set the text field to show its content
+            // Otherwise get business item and set the text field to show its content
             item = getIntent().getParcelableExtra("item");
-            getEditor().setText(item.getText());
+            getTextfield().setText(item.getText());
         }
 
+        // Create a new request queue for network tasks
         queue = Volley.newRequestQueue(this, new HttpClientStack(TodoUtils.getClient()));
 
         // Show main icon as back button
@@ -58,6 +71,7 @@ public class DetailsActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.details_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
@@ -66,50 +80,63 @@ public class DetailsActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem toggle = menu.findItem(R.id.toggle_done);
-        if(item.getClosed()) {
-            toggle.setIcon(R.drawable.btn_check_on);
-            toggle.setTitle(R.string.state_closed);
+        // A new item may not be closed before it has been saved
+        if(newItem) {
+            toggle.setEnabled(false);
         } else {
-            toggle.setIcon(R.drawable.btn_check_off);
-            toggle.setTitle(R.string.state_open);
+            toggle.setEnabled(true);
+            // Check whether the business item is closed and set the icon and text accordingly
+            if(item.getClosed()) {
+                toggle.setIcon(R.drawable.btn_check_on);
+                toggle.setTitle(R.string.state_closed);
+            } else {
+                toggle.setIcon(R.drawable.btn_check_off);
+                toggle.setTitle(R.string.state_open);
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // React to the various button presses possible
         switch (item.getItemId()) {
             case R.id.toggle_done:
-                return onToggleDone(item);
+                onToggleDone(item);
+                break;
             case R.id.action_save:
-                return onActionSave();
+                onActionSave();
+                break;
             case R.id.action_delete:
-                return onActionDelete();
+                onActionDelete();
+                break;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+                returnToMainActivity();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     /**
-     * TODO AC: JavaDoc
+     * Handle the activation of our "completed" toggle.
      *
-     * @param button
-     * @return
+     * @param button The "completed" toggle button. This must be reset after (de)activation.
      */
-    private boolean onToggleDone(final MenuItem button) {
+    private void onToggleDone(final MenuItem button) {
+        // We will need to pass the following parameters so that the entry on the server may be modified
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(item.getID()));
-        params.put("title", getEditor().getText().toString());
+        params.put("title", getTextfield().getText().toString());
         params.put("completed", Boolean.toString(!item.getClosed()));
 
         Request putRequest = new GsonRequest<TodoItems>(
-                Request.Method.PUT, TodoUtils.getUrl() + item.getID(), TodoItems.class, params,
+                Request.Method.PUT, TodoUtils.URL + item.getID(), TodoItems.class, params,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
+                        // If the request was successful, we have to modify the appearance accordingly
                         item.setClosed(!item.getClosed());
                         if(item.getClosed()) {
                             button.setIcon(R.drawable.btn_check_on);
@@ -122,112 +149,115 @@ public class DetailsActivity extends Activity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorMsg = error.getMessage();
-
-                Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, errorMsg)),
+                // If there was an error, show it
+                Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage())),
                         Toast.LENGTH_LONG).show();
             }
         }
         );
         queue.add(putRequest);
-        return true;
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * Actions to do when the "save" button is activated. These actions will differ depending on whether the business object is newly created (POST) or must be updated (PUT).
      */
-    private boolean onActionSave() {
+    private void onActionSave() {
+        // We will need to pass the following parameters so that the entry on the server may be created or modified
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("title", getEditor().getText().toString());
+        params.put("title", getTextfield().getText().toString());
         params.put("completed", "false");
+
+        Request request;
         if(newItem) {
-            Request postRequest = new GsonRequest<Void>(
-                    Request.Method.POST, TodoUtils.getUrl(), Void.class, params,
+            // If the business item is new we will create a new entry on the server via a POST request.
+            request = new GsonRequest<Void>(
+                    Request.Method.POST, TodoUtils.URL, Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
-                            try {
-                                //startActivity(new Intent(DetailsActivity.this, MainActivity.class));
-                                NavUtils.navigateUpFromSameTask(DetailsActivity.this);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            returnToMainActivity();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorMsg = error.getMessage();
-
-                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, errorMsg)),
+                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage())),
                             Toast.LENGTH_LONG).show();
                 }
             }
             );
-            queue.add(postRequest);
         } else {
+            // If the business item is already known we have to modify it with a PUT request; this requires an ID.
             params.put("id", Integer.toString(item.getID()));
-            Request putRequest = new GsonRequest<Void>(
-                    Request.Method.PUT, TodoUtils.getUrl() + item.getID(), Void.class, params,
+            request = new GsonRequest<Void>(
+                    Request.Method.PUT, TodoUtils.URL + item.getID(), Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
-                            try {
-                                //startActivity(new Intent(DetailsActivity.this, MainActivity.class));
-                                NavUtils.navigateUpFromSameTask(DetailsActivity.this);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            returnToMainActivity();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorMsg = error.getMessage();
-
-                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, errorMsg)),
+                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage())),
                             Toast.LENGTH_LONG).show();
                 }
             }
             );
-            queue.add(putRequest);
         }
-        return true;
+        queue.add(request);
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * Actions to do when the "delete" button is activated
      */
-    private boolean onActionDelete() {
-        Request putRequest = new GsonRequest<Void>(
-                Request.Method.DELETE, TodoUtils.getUrl() + item.getID(), Void.class,
-                new Response.Listener<Void>() {
-                    @Override
-                    public void onResponse(Void response) {
-                        try {
-                            //startActivity(new Intent(DetailsActivity.this, MainActivity.class));
-                            NavUtils.navigateUpFromSameTask(DetailsActivity.this);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+    private void onActionDelete() {
+        // When deleting a confirmation is required
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.confirm_delete).setMessage(item.getText());
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMsg = error.getMessage();
+            public void onClick(DialogInterface dialog, int which) {
+                // The actual deletion of an item on the server is very straight forward; just send a DELETE request to the URL with the correct ID
+                Request putRequest = new GsonRequest<Void>(
+                        Request.Method.DELETE, TodoUtils.URL + item.getID(), Void.class,
+                        new Response.Listener<Void>() {
+                            @Override
+                            public void onResponse(Void response) {
+                                returnToMainActivity();
 
-                Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, errorMsg)),
-                        Toast.LENGTH_LONG).show();
+                                Toast.makeText(DetailsActivity.this, R.string.deleted, Toast.LENGTH_LONG).show();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage())),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+                );
+                queue.add(putRequest);
             }
-        }
-        );
-        queue.add(putRequest);
-        return true;
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+            }
+        });
+        builder.create().show();
     }
 
-    private EditText getEditor() {
+    /**
+     * @return the text field
+     */
+    private EditText getTextfield() {
         return (EditText) findViewById(R.id.edit_area);
+    }
+
+    /**
+     * This will take us back to the MainActivity
+     */
+    private void returnToMainActivity() {
+        NavUtils.navigateUpFromSameTask(DetailsActivity.this);
     }
 }

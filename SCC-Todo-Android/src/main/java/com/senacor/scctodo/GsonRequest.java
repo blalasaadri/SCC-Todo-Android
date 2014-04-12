@@ -29,7 +29,10 @@ import java.util.Map;
 
 /**
  * Volley adapter for JSON requests with POST method that will be parsed into Java objects by Gson.
- * Copied from {@literal http://blog.aimanbaharum.com/2014/02/android-development-5-using-volley-and.html}
+ * <p>Copied and adapted from {@literal http://blog.aimanbaharum.com/2014/02/android-development-5-using-volley-and.html} on April 9th, 2014</p>
+ *
+ * @author Aiman Baharum, http://blog.aimanbaharum.com/
+ * @author Alasdair Collinson, Senacor Technologies AG
  */
 public class GsonRequest<T> extends Request<T> {
     private Gson mGson = new Gson();

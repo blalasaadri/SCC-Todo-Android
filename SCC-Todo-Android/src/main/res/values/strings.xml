@@ -17,4 +17,9 @@
     <string name="error_adding_to_server">Fehler beim Hinzufügen der Aufgabe</string>
     <string name="error_deleting_from_server">Fehler beim Löschen der Aufgabe</string>
     <string name="error_marking_as_done">Fehler beim Markieren der Aufgabe als erledigt</string>
+
+    <string name="confirm_delete">Wollen Sie den folgenden Eintrag wirklich löschen?</string>
+    <string name="deleted">Der Eintrag wurde gelöscht</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
 </resources>

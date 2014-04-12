@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Bean für ein TodoItem.
+ * Bean for a TodoItem.
  *
  * @author Alasdair Collinson, Senacor Technologies AG
  */
@@ -29,27 +29,29 @@ public class TodoItem implements Parcelable {
     };
 
     /**
-     * TODO AC: JavaDoc
+     * The "title" field from the JSON object this is created from
      */
     @SerializedName("title")
     private String text;
 
     /**
-     * TODO AC: JavaDoc
+     * The "id" field from the JSON object this is created from
      */
     @SerializedName("id")
     private final int id;
 
     /**
-     * TODO AC: JavaDoc
+     * The "completed" field from the JSON object this is created from
      */
     @SerializedName("completed")
     private boolean closed;
 
     /**
-     * TODO AC: JavaDoc
+     * A constructor
      *
-     * @param text
+     * @param text The text of the TodoItem
+     * @param id The id of the TodoItem
+     * @param closed Is this item closed yet?
      */
     public TodoItem(String text, int id, boolean closed) {
         this.text = text;
@@ -58,51 +60,40 @@ public class TodoItem implements Parcelable {
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @param id
-     */
-    public TodoItem(int id) {
-        this.id = id;
-        this.text = "";
-    }
-
-    /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * @return This items text
      */
     public String getText() {
         return text;
     }
 
     /**
-     * TODO AC: JavaDoc
+     * Set the text of this item
      *
-     * @param text
+     * @param text The text which should be set
      */
     public void setText(String text) {
         this.text = text;
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * @return This items ID
      */
     public int getID() {
         return id;
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * @return Is this item closed?
      */
     public boolean getClosed() {
         return closed;
     }
 
+    /**
+     * Set whether this item is closed or not.
+     *
+     * @param closed Should it be closed?
+     */
     public void setClosed(boolean closed) {
         this.closed = closed;
     }
@@ -121,7 +112,7 @@ public class TodoItem implements Parcelable {
 
     @Override
     public String toString() {
-        return String.format("Todo (id: %d, closed: %b): \"%s\"", id, closed, text);
+        return String.format("Todo; id: '%d', text: '%s', closed: '%b')", id, text, closed);
     }
 
     @Override

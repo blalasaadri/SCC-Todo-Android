@@ -34,11 +34,13 @@
             android:name="com.senacor.scctodo.DetailsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible"
             android:parentActivityName="com.senacor.scctodo.MainActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.senacor.scctodo.MainActivity" />
+            <!-- Split the action bar in 4.0 and lower-->
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />

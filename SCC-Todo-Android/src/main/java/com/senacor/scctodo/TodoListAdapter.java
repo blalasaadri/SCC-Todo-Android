@@ -48,11 +48,6 @@ public class TodoListAdapter implements ListAdapter {
         items = new TodoItems();
         if (items.getContent() == null) {
             List<TodoItem> list = new ArrayList<TodoItem>();
-            /*list.add(new TodoItem("Aktivität 1", 1, false));
-            list.add(new TodoItem("Todo 2", 2, false));
-            list.add(new TodoItem("Aufgabe 3", 3, false));
-            list.add(new TodoItem("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", 4, true));
-            list.add(new TodoItem("Task 4", 5, true));*/
             items.setContent(list);
         }
         observers = new LinkedList<DataSetObserver>();

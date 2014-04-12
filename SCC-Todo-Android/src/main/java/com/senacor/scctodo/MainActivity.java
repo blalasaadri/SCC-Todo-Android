@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,24 +25,23 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * TODO AC: JavaDoc
+ * The main Activity for this app. It displays a list of TodoItems retrieved from a server and allows you to create new ones.
+ * Clicking on a TodoItem will take you to a DetailsActivity in which further modifications can be made.
  *
  * @author Alasdair Collinson, Senacor Technologies AG
  */
 public class MainActivity extends ListActivity {
 
     /**
-     * TODO AC: document
+     * This is the Adapter being used to display the list's data
      */
-    private Gson gson;
-
-    // This is the Adapter being used to display the list's data
     private TodoListAdapter adapter;
 
-    // Networking stuff
+    /**
+     * The request queue for volley
+     */
     private RequestQueue queue;
 
-    // UI Elements
     private ProgressBar progressBar;
 
     @Override
@@ -65,22 +65,27 @@ public class MainActivity extends ListActivity {
         // Create an empty adapter we will use to display the loaded data.
         // We pass null for the cursor, then update it in onLoadFinished()
         adapter = new TodoListAdapter(this);
-        onActionRefresh();
         setListAdapter(adapter);
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        onActionRefresh();
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // Do something when a list item is clicked
+        // When a list item is clicked open a DetailsActivity with that item
         Intent intent = new Intent(this, DetailsActivity.class);
         TodoItem clicked = (TodoItem) getListView().getItemAtPosition(position);
-        intent.putExtra("new", false);
         intent.putExtra("item", clicked);
         startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Create the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
@@ -88,50 +93,49 @@ public class MainActivity extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // React to clicked icons
         switch (item.getItemId()) {
             case R.id.action_add:
-                return onActionAdd();
+                onActionAdd();
+                break;
             case R.id.action_refresh:
-                return onActionRefresh();
+                onActionRefresh();
+                break;
             case R.id.action_settings:
-                return onActionSettings();
-            case R.id.action_delete: // Not handled here
-                return false;
-            case R.id.action_save: // Not handled here
-                return false;
+                onActionSettings();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * TODO AC: JavaDoc
-     *
-     * @return
-     */
-    private boolean onActionAdd() {
-        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-        intent.putExtra("new", true);
-        startActivity(intent);
         return true;
     }
 
     /**
-     * TODO AC: JavaDoc
-     *
-     * @return
+     * If the "add" button was pressed, open a DetailsActivity with the "new" parameter active
      */
-    private boolean onActionRefresh() {
+    private void onActionAdd() {
+        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        intent.putExtra("new", true);
+        startActivity(intent);
+    }
+
+    /**
+     * If the "refresh" button is pressed (or this function is called programmatically) refresh the list
+     */
+    private void onActionRefresh() {
+        // Hide the list and show the progress bar
         getListView().setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.getUrl(), TodoItems.class,
+        // Send a request which will return a stream of JSON which will be deserialized to a TodoItems object and put into the adapter
+        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.URL, TodoItems.class,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
                         try {
-                            Log.d("Json Response", response.getContent().toString());
                             adapter.setItems(response);
+                            Log.d(TodoUtils.TAG, response.getContent().toString());
                         } catch (Exception e) {
+                            Log.e(TodoUtils.TAG, "Error loading todo items", e);
                             e.printStackTrace();
                         } finally {
                             progressBar.setVisibility(View.GONE);
@@ -141,9 +145,7 @@ public class MainActivity extends ListActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorMsg = error.getMessage();
-
-                Toast.makeText(MainActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_loading_from_server, errorMsg)),
+                Toast.makeText(MainActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_loading_from_server, error.getMessage()), error.getMessage()),
                         Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.GONE);
                 getListView().setVisibility(View.VISIBLE);
@@ -151,16 +153,12 @@ public class MainActivity extends ListActivity {
         }
         );
         queue.add(getRequest);
-        return true;
     }
 
     /**
      * TODO AC: JavaDoc
-     *
-     * @return
      */
-    private boolean onActionSettings() {
+    private void onActionSettings() {
         // TODO AC: Open settings
-        return true;
     }
 }
