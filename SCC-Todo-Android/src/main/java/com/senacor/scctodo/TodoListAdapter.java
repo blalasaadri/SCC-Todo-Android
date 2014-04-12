@@ -9,6 +9,7 @@ import android.text.style.StrikethroughSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import java.util.List;
  *
  * @author Alasdair Collinson, Senacor Technologies AG
  */
+// TODO AC: Could this be an ArrayAdapter?
 public class TodoListAdapter implements ListAdapter {
 
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
@@ -30,13 +32,6 @@ public class TodoListAdapter implements ListAdapter {
 
     private Context context;
     private List<DataSetObserver> observers;
-
-    /**
-     * TODO AC: JavaDoc
-     */
-    private static class ViewHolder {
-        TextView content;
-    }
 
     /**
      * TODO AC: JavaDoc
@@ -78,21 +73,32 @@ public class TodoListAdapter implements ListAdapter {
         View view = convertView;
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.todo_item, null, false);
-            ViewHolder holder = new ViewHolder();
-            holder.content = (TextView) view.findViewById(R.id.todoText);
-            view.setTag(holder);
         }
+        final TextView content = (TextView) view.findViewById(R.id.todoText);
+        /*ViewTreeObserver vto = content.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                content.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                // If API level was at least 16 the following would be better:
+                // content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if(content.getLineCount() > 1){
+                    int lineEndIndex = content.getLayout().getLineEnd(1);
+                    content.setText(content.getText().subSequence(0, lineEndIndex - 3) + "...");
+                }
+            }
+        });*/
+        view.setTag(content);
         TodoItem selectedResult = (TodoItem) getItem(position);
-        ViewHolder holder = (ViewHolder) view.getTag();
-        setText(holder.content, selectedResult);
+        setText(content, selectedResult);
         return view;
     }
 
     private void setText(TextView view, TodoItem item) {
         String text = item.getText();
-        if (text.length() > 15) {
+        /*if (text.length() > 15) {
             text = text.substring(0, 15) + "...";
-        }
+        }*/
         if (item.getClosed()) {
             view.setTypeface(Typeface.DEFAULT);
             view.setText(text, TextView.BufferType.SPANNABLE);

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -56,6 +57,8 @@ public class DetailsActivity extends Activity {
         if(newItem) {
             // If so, create a new dummy item
             item = new TodoItem(getResources().getString(R.string.enter_text_here), 0, false);
+            // Also show the keyboard at startup
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         } else {
             // Otherwise get business item and set the text field to show its content
             item = getIntent().getParcelableExtra("item");
@@ -80,19 +83,13 @@ public class DetailsActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem toggle = menu.findItem(R.id.toggle_done);
-        // A new item may not be closed before it has been saved
-        if(newItem) {
-            toggle.setEnabled(false);
+        // Check whether the business item is closed and set the icon and text accordingly
+        if(item.getClosed()) {
+            toggle.setIcon(R.drawable.btn_check_on);
+            toggle.setTitle(R.string.state_closed);
         } else {
-            toggle.setEnabled(true);
-            // Check whether the business item is closed and set the icon and text accordingly
-            if(item.getClosed()) {
-                toggle.setIcon(R.drawable.btn_check_on);
-                toggle.setTitle(R.string.state_closed);
-            } else {
-                toggle.setIcon(R.drawable.btn_check_off);
-                toggle.setTitle(R.string.state_open);
-            }
+            toggle.setIcon(R.drawable.btn_check_off);
+            toggle.setTitle(R.string.state_open);
         }
         return super.onPrepareOptionsMenu(menu);
     }

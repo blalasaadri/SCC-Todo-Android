@@ -34,7 +34,6 @@
             android:name="com.senacor.scctodo.DetailsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysVisible"
             android:parentActivityName="com.senacor.scctodo.MainActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
