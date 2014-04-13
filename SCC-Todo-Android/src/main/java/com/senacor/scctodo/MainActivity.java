@@ -7,10 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -26,7 +30,8 @@ import com.android.volley.toolbox.Volley;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.Inflater;
+
+import static com.senacor.scctodo.TodoItems.TodoItem;
 
 /**
  * The main Activity for this app. It displays a list of TodoItems retrieved from a server and allows you to create new ones.
@@ -66,8 +71,7 @@ public class MainActivity extends ListActivity {
         // Set up the networking components
         queue = Volley.newRequestQueue(this, new HttpClientStack(TodoUtils.getClient()));
 
-        // Create an empty adapter we will use to display the loaded data.
-        // We pass null for the cursor, then update it in onLoadFinished()
+        // Create an adapter we will use to display the loaded data.
         adapter = new TodoListAdapter(this);
         setListAdapter(adapter);
     }
@@ -105,14 +109,11 @@ public class MainActivity extends ListActivity {
             case R.id.action_refresh:
                 onActionRefresh();
                 break;
-            /*case R.id.action_settings:
-                onActionSettings();
-                break;*/
             case R.id.set_server:
                 onActionSetServer();
                 break;
             case R.id.about:
-                onActionAbout();
+                onLicenseAbout();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -137,7 +138,7 @@ public class MainActivity extends ListActivity {
         getListView().setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         // Send a request which will return a stream of JSON which will be deserialized to a TodoItems object and put into the adapter
-        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, getUrl(), TodoItems.class,
+        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.getUrl(getBaseContext()), TodoItems.class,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
@@ -166,20 +167,15 @@ public class MainActivity extends ListActivity {
     }
 
     /**
-     * TODO AC: JavaDoc
+     * If the Settings->Set Server option was chosen, open a settings dialogue
      */
-    /*private void onActionSettings() {
-        // TODO AC: Open settings
-    }*/
-
     private void onActionSetServer() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.set_server);
-        //LayoutInflater inflater = getLayoutInflater();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View content = inflater.inflate(R.layout.server_settings, null);
         final EditText text = ((EditText) content.findViewById(R.id.server_url));
-        text.setText(getUrl());
+        text.setText(TodoUtils.getUrl(getBaseContext()));
         builder.setView(content);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -194,15 +190,13 @@ public class MainActivity extends ListActivity {
         builder.create().show();
     }
 
-    private void onActionAbout() {
+    /**
+     * If the Settings->License option was chosen, open a dialogue showing the license information
+     */
+    private void onLicenseAbout() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.about).setMessage(loadLicense());
-        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
+        builder.setNeutralButton(R.string.ok, null);
         builder.create().show();
     }
 
@@ -220,18 +214,8 @@ public class MainActivity extends ListActivity {
             while ((len = license.read(bytes)) > 0)
                 byteStream.write(bytes, 0, len);
             return new String(byteStream.toByteArray(), "UTF8");
-        } catch(IOException e) {
+        } catch (IOException e) {
             return getResources().getString(R.string.error_reading_license);
         }
-    }
-
-    /**
-     * TODO AC: JavaDoc
-     *
-     * @return
-     */
-    private String getUrl() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        return preferences.getString("url", TodoUtils.URL);
     }
 }

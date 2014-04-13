@@ -2,19 +2,13 @@ package com.senacor.scctodo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,9 +19,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
 
-import org.apache.http.impl.client.AbstractHttpClient;
-
 import java.util.HashMap;
+
+import static com.senacor.scctodo.TodoItems.TodoItem;
 
 /**
  * This Activity shows details of either a selected TodoItem or a newly created one.
@@ -56,7 +50,7 @@ public class DetailsActivity extends Activity {
 
         // Is this a newly created item?
         newItem = getIntent().getBooleanExtra("new", false);
-        if(newItem) {
+        if (newItem) {
             // If so, create a new dummy item
             item = new TodoItem(getResources().getString(R.string.enter_text_here), 0, false);
             // Also show the keyboard at startup
@@ -86,7 +80,7 @@ public class DetailsActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem toggle = menu.findItem(R.id.toggle_done);
         // Check whether the business item is closed and set the icon and text accordingly
-        if(item.getClosed()) {
+        if (item.getClosed()) {
             toggle.setIcon(R.drawable.btn_check_on);
             toggle.setTitle(R.string.state_closed);
         } else {
@@ -131,13 +125,13 @@ public class DetailsActivity extends Activity {
         params.put("completed", Boolean.toString(!item.getClosed()));
 
         Request putRequest = new GsonRequest<TodoItems>(
-                Request.Method.PUT, getUrl() + item.getID(), TodoItems.class, params,
+                Request.Method.PUT, TodoUtils.getUrl(getBaseContext(), Integer.toString(item.getID())), TodoItems.class, params,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
                         // If the request was successful, we have to modify the appearance accordingly
                         item.setClosed(!item.getClosed());
-                        if(item.getClosed()) {
+                        if (item.getClosed()) {
                             button.setIcon(R.drawable.btn_check_on);
                             button.setTitle(R.string.state_closed);
                         } else {
@@ -149,7 +143,7 @@ public class DetailsActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // If there was an error, show it
-                Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage())),
+                Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage()), error.getMessage()),
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -167,10 +161,10 @@ public class DetailsActivity extends Activity {
         params.put("completed", "false");
 
         Request request;
-        if(newItem) {
+        if (newItem) {
             // If the business item is new we will create a new entry on the server via a POST request.
             request = new GsonRequest<Void>(
-                    Request.Method.POST, getUrl(), Void.class, params,
+                    Request.Method.POST, TodoUtils.getUrl(getBaseContext()), Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
@@ -179,7 +173,7 @@ public class DetailsActivity extends Activity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage())),
+                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage()), error.getMessage()),
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -188,7 +182,7 @@ public class DetailsActivity extends Activity {
             // If the business item is already known we have to modify it with a PUT request; this requires an ID.
             params.put("id", Integer.toString(item.getID()));
             request = new GsonRequest<Void>(
-                    Request.Method.PUT, getUrl() + item.getID(), Void.class, params,
+                    Request.Method.PUT, TodoUtils.getUrl(getBaseContext(), Integer.toString(item.getID())), Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
@@ -197,7 +191,7 @@ public class DetailsActivity extends Activity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage())),
+                    Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_adding_to_server, error.getMessage()), error.getMessage()),
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -218,7 +212,7 @@ public class DetailsActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 // The actual deletion of an item on the server is very straight forward; just send a DELETE request to the URL with the correct ID
                 Request putRequest = new GsonRequest<Void>(
-                        Request.Method.DELETE, getUrl() + item.getID(), Void.class,
+                        Request.Method.DELETE, TodoUtils.getUrl(getBaseContext(), Integer.toString(item.getID())), Void.class,
                         new Response.Listener<Void>() {
                             @Override
                             public void onResponse(Void response) {
@@ -229,7 +223,7 @@ public class DetailsActivity extends Activity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage())),
+                        Toast.makeText(DetailsActivity.this, String.format("%s (%s)", getResources().getString(R.string.error_marking_as_done, error.getMessage()), error.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 }
@@ -253,15 +247,5 @@ public class DetailsActivity extends Activity {
      */
     private void returnToMainActivity() {
         NavUtils.navigateUpFromSameTask(DetailsActivity.this);
-    }
-
-    /**
-     * TODO AC: JavaDoc
-     *
-     * @return
-     */
-    private String getUrl() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        return preferences.getString("url", TodoUtils.URL);
     }
 }

@@ -9,17 +9,17 @@ import android.text.style.StrikethroughSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.senacor.scctodo.TodoItems.TodoItem;
+
 /**
- * TODO AC: JavaDoc
+ * A ListAdapter for the list of {@link com.senacor.scctodo.TodoItems.TodoItem}s
  *
  * @author Alasdair Collinson, Senacor Technologies AG
  */
@@ -34,9 +34,9 @@ public class TodoListAdapter implements ListAdapter {
     private List<DataSetObserver> observers;
 
     /**
-     * TODO AC: JavaDoc
+     * Constructor
      *
-     * @param context
+     * @param context The context in which the list is displayed; this will normally be an {@link android.app.Activity} of some sort
      */
     public TodoListAdapter(Context context) {
         this.context = context;
@@ -49,23 +49,15 @@ public class TodoListAdapter implements ListAdapter {
     }
 
     /**
-     * TODO AC: JavaDoc
+     * Set the items in this list
      *
-     * @param items
+     * @param items The {@link com.senacor.scctodo.TodoItems.TodoItem}s to be displayed
      */
     public void setItems(TodoItems items) {
-        this.items = items;
+        TodoListAdapter.items = items;
         for (DataSetObserver observer : observers) {
             observer.onChanged();
         }
-    }
-
-    /**
-     * TODO AC: JavaDoc
-     * @return
-     */
-    public TodoItems getItems() {
-        return items;
     }
 
     @Override
@@ -75,30 +67,21 @@ public class TodoListAdapter implements ListAdapter {
             view = LayoutInflater.from(context).inflate(R.layout.todo_item, null, false);
         }
         final TextView content = (TextView) view.findViewById(R.id.todoText);
-        /*ViewTreeObserver vto = content.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                content.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                // If API level was at least 16 the following would be better:
-                // content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                if(content.getLineCount() > 1){
-                    int lineEndIndex = content.getLayout().getLineEnd(1);
-                    content.setText(content.getText().subSequence(0, lineEndIndex - 3) + "...");
-                }
-            }
-        });*/
         view.setTag(content);
         TodoItem selectedResult = (TodoItem) getItem(position);
         setText(content, selectedResult);
         return view;
     }
 
-    private void setText(TextView view, TodoItem item) {
+    /**
+     * A helper function which will set the value of a {@link android.widget.TextView} to the text in the passed {@link com.senacor.scctodo.TodoItems.TodoItem}.
+     * This function will also change the style of the text, depending on whether the item is marked as done or not.
+     *
+     * @param view The {@link android.widget.TextView} which should be set
+     * @param item The {@link com.senacor.scctodo.TodoItems.TodoItem} from which the content should be taken.
+     */
+    private static void setText(TextView view, TodoItem item) {
         String text = item.getText();
-        /*if (text.length() > 15) {
-            text = text.substring(0, 15) + "...";
-        }*/
         if (item.getClosed()) {
             view.setTypeface(Typeface.DEFAULT);
             view.setText(text, TextView.BufferType.SPANNABLE);
@@ -112,7 +95,7 @@ public class TodoListAdapter implements ListAdapter {
 
     @Override
     public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-        ((LinkedList) observers).addFirst(dataSetObserver);
+        ((LinkedList<DataSetObserver>) observers).addFirst(dataSetObserver);
     }
 
     @Override
