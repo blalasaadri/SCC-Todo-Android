@@ -3,3 +3,4 @@ SCC-Todo-Android.iml
 .idea
 .gradle
 **/build
+**/Thumbs.db
