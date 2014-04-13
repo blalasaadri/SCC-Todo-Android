@@ -2,24 +2,33 @@
 <resources>
 
     <string name="app_name">ToDoLo</string>
-    <string name="action_add">Hinzufügen</string>
-    <string name="action_refresh">Aktualisieren</string>
-    <string name="action_delete">Löschen</string>
-    <string name="action_save">Speichern</string>
-    <string name="action_settings">Einstellungen</string>
-    <string name="state_open">Offen</string>
-    <string name="state_closed">Abgeschlossen</string>
-    <string name="na">nicht verfügbar</string>
+    <string name="action_add">Add</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_settings">Settings</string>
+    <string name="set_server">Set server</string>
+    <string name="about">License</string>
+    <string name="state_open">Open</string>
+    <string name="state_closed">Closed</string>
+    <string name="na">not available</string>
 
-    <string name="enter_text_here">Hier Text eingeben</string>
+    <string name="enter_text_here">Enter text here</string>
 
-    <string name="error_loading_from_server">Fehler beim Laden der Aufgaben vom Server</string>
-    <string name="error_adding_to_server">Fehler beim Hinzufügen der Aufgabe</string>
-    <string name="error_deleting_from_server">Fehler beim Löschen der Aufgabe</string>
-    <string name="error_marking_as_done">Fehler beim Markieren der Aufgabe als erledigt</string>
+    <string name="error_loading_from_server">Error while loading tasks from the server</string>
+    <string name="error_adding_to_server">Error while adding the task</string>
+    <string name="error_deleting_from_server">Error while deleting the task</string>
+    <string name="error_marking_as_done">Error while marking task as done</string>
 
-    <string name="confirm_delete">Wollen Sie den folgenden Eintrag wirklich löschen?</string>
-    <string name="deleted">Der Eintrag wurde gelöscht</string>
-    <string name="yes">Ja</string>
-    <string name="no">Nein</string>
+    <string name="confirm_delete">Do you really want to delete this task?</string>
+    <string name="deleted">The task was deleted</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="error_reading_license">The license could not be read.</string>
+
+    <string name="provide_server_url">Please enter the URL to the server</string>
 </resources>

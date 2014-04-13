@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -129,7 +131,7 @@ public class DetailsActivity extends Activity {
         params.put("completed", Boolean.toString(!item.getClosed()));
 
         Request putRequest = new GsonRequest<TodoItems>(
-                Request.Method.PUT, TodoUtils.URL + item.getID(), TodoItems.class, params,
+                Request.Method.PUT, getUrl() + item.getID(), TodoItems.class, params,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
@@ -168,7 +170,7 @@ public class DetailsActivity extends Activity {
         if(newItem) {
             // If the business item is new we will create a new entry on the server via a POST request.
             request = new GsonRequest<Void>(
-                    Request.Method.POST, TodoUtils.URL, Void.class, params,
+                    Request.Method.POST, getUrl(), Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
@@ -186,7 +188,7 @@ public class DetailsActivity extends Activity {
             // If the business item is already known we have to modify it with a PUT request; this requires an ID.
             params.put("id", Integer.toString(item.getID()));
             request = new GsonRequest<Void>(
-                    Request.Method.PUT, TodoUtils.URL + item.getID(), Void.class, params,
+                    Request.Method.PUT, getUrl() + item.getID(), Void.class, params,
                     new Response.Listener<Void>() {
                         @Override
                         public void onResponse(Void response) {
@@ -216,7 +218,7 @@ public class DetailsActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 // The actual deletion of an item on the server is very straight forward; just send a DELETE request to the URL with the correct ID
                 Request putRequest = new GsonRequest<Void>(
-                        Request.Method.DELETE, TodoUtils.URL + item.getID(), Void.class,
+                        Request.Method.DELETE, getUrl() + item.getID(), Void.class,
                         new Response.Listener<Void>() {
                             @Override
                             public void onResponse(Void response) {
@@ -235,12 +237,7 @@ public class DetailsActivity extends Activity {
                 queue.add(putRequest);
             }
         });
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
+        builder.setNegativeButton(R.string.no, null);
         builder.create().show();
     }
 
@@ -256,5 +253,15 @@ public class DetailsActivity extends Activity {
      */
     private void returnToMainActivity() {
         NavUtils.navigateUpFromSameTask(DetailsActivity.this);
+    }
+
+    /**
+     * TODO AC: JavaDoc
+     *
+     * @return
+     */
+    private String getUrl() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return preferences.getString("url", TodoUtils.URL);
     }
 }

@@ -1,13 +1,19 @@
 package com.senacor.scctodo;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -16,13 +22,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.util.HashMap;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.Inflater;
 
 /**
  * The main Activity for this app. It displays a list of TodoItems retrieved from a server and allows you to create new ones.
@@ -101,8 +105,14 @@ public class MainActivity extends ListActivity {
             case R.id.action_refresh:
                 onActionRefresh();
                 break;
-            case R.id.action_settings:
+            /*case R.id.action_settings:
                 onActionSettings();
+                break;*/
+            case R.id.set_server:
+                onActionSetServer();
+                break;
+            case R.id.about:
+                onActionAbout();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -127,7 +137,7 @@ public class MainActivity extends ListActivity {
         getListView().setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         // Send a request which will return a stream of JSON which will be deserialized to a TodoItems object and put into the adapter
-        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, TodoUtils.URL, TodoItems.class,
+        Request getRequest = new GsonRequest<TodoItems>(Request.Method.GET, getUrl(), TodoItems.class,
                 new Response.Listener<TodoItems>() {
                     @Override
                     public void onResponse(TodoItems response) {
@@ -158,7 +168,70 @@ public class MainActivity extends ListActivity {
     /**
      * TODO AC: JavaDoc
      */
-    private void onActionSettings() {
+    /*private void onActionSettings() {
         // TODO AC: Open settings
+    }*/
+
+    private void onActionSetServer() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.set_server);
+        //LayoutInflater inflater = getLayoutInflater();
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View content = inflater.inflate(R.layout.server_settings, null);
+        final EditText text = ((EditText) content.findViewById(R.id.server_url));
+        text.setText(getUrl());
+        builder.setView(content);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
+                preferencesEditor.putString("url", text.getText().toString());
+                preferencesEditor.commit();
+                onActionRefresh();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.create().show();
+    }
+
+    private void onActionAbout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.about).setMessage(loadLicense());
+        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+            }
+        });
+        builder.create().show();
+    }
+
+    /**
+     * Adapted from {@literal http://sunil-android.blogspot.de/2013/05/open-read-file-from-assets.html}
+     *
+     * @return The license as a String object
+     */
+    private String loadLicense() {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        byte[] bytes = new byte[4096];
+        int len = 0;
+        try {
+            InputStream license = getResources().openRawResource(R.raw.license);
+            while ((len = license.read(bytes)) > 0)
+                byteStream.write(bytes, 0, len);
+            return new String(byteStream.toByteArray(), "UTF8");
+        } catch(IOException e) {
+            return getResources().getString(R.string.error_reading_license);
+        }
+    }
+
+    /**
+     * TODO AC: JavaDoc
+     *
+     * @return
+     */
+    private String getUrl() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return preferences.getString("url", TodoUtils.URL);
     }
 }

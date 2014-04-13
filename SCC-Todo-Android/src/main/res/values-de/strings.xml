@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ToDoLo</string>
+    <string name="action_add">Hinzufügen</string>
+    <string name="action_refresh">Aktualisieren</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="set_server">Server einstellen</string>
+    <string name="about">Lizenz</string>
+    <string name="state_open">Offen</string>
+    <string name="state_closed">Abgeschlossen</string>
+    <string name="na">nicht verfügbar</string>
+
+    <string name="enter_text_here">Hier Text eingeben</string>
+
+    <string name="error_loading_from_server">Fehler beim Laden der Aufgaben vom Server</string>
+    <string name="error_adding_to_server">Fehler beim Hinzufügen der Aufgabe</string>
+    <string name="error_deleting_from_server">Fehler beim Löschen der Aufgabe</string>
+    <string name="error_marking_as_done">Fehler beim Markieren der Aufgabe als erledigt</string>
+
+    <string name="confirm_delete">Wollen Sie den folgenden Eintrag wirklich löschen?</string>
+    <string name="deleted">Der Eintrag wurde gelöscht</string>
+
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+
+    <string name="error_reading_license">Die Lizenz konnte leider nicht gelesen werden.</string>
+
+    <string name="provide_server_url">Bitte geben Sie die URL an unter welcher der Server gefunden werden kann</string>
+</resources>

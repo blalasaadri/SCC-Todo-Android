@@ -1,14 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/action_add"
-          android:icon="@drawable/ic_menu_add"
-          android:title="@string/action_add"
-          android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_refresh"
-          android:icon="@drawable/ic_menu_refresh"
-          android:title="@string/action_refresh"
-          android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_settings"
-          android:icon="@drawable/ic_menu_preferences"
-          android:title="@string/action_settings"
-          android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/action_add"
+        android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_menu_refresh"
+        android:title="@string/action_refresh"
+        android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_menu_preferences"
+        android:title="@string/action_settings"
+        android:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/set_server"
+                android:title="@string/set_server"/>
+            <item
+                android:id="@+id/about"
+                android:title="@string/about"/>
+        </menu>
+    </item>
 </menu>

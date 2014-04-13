@@ -1,5 +1,7 @@
 package com.senacor.scctodo;
 
+import android.preference.PreferenceManager;
+
 import com.android.volley.RequestQueue;
 
 import org.apache.http.impl.client.AbstractHttpClient;
